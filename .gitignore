@@ -1,0 +1,15 @@
+# Build Outputs
+build/
+*.exe
+*.obj
+*.o
+*.pdb
+*.ilk
+*.lib
+*.dll
+
+# Kepp test binaries and system drivers out of the repo
+*.sys
+
+# Editor
+.vscode/

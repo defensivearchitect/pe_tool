@@ -1,0 +1,8 @@
+* text=auto
+*.c text
+*.h text
+*.md text
+*.bat text eol=crlf
+*.exe binary
+*.dll binary
+*.sys binary
