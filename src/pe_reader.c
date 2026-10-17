@@ -25,6 +25,10 @@ static pe_read_status read_open_file(FILE *fp, uint8_t **out_data, size_t *out_l
         return PE_READ_EMPTY;
     }
 
+    if (size > PE_MAX_FILE_SIZE) {
+        return PE_READ_TOO_LARGE;
+    }
+
     size_t len = (size_t)size;
     uint8_t *data = malloc(len);
     if (data == NULL) {
@@ -72,6 +76,8 @@ const char *pe_read_status_str(pe_read_status status) {
         return "out of memory";
     case PE_READ_SHORT_READ:
         return "could not read the whole file";
+    case PE_READ_TOO_LARGE:
+        return "file is too large";
     }
     return "unknown error";
 }
