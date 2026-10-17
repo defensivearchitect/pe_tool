@@ -29,3 +29,7 @@ first bytes: 4d 5a
 ```
 
 `4d 5a` is "MZ", the signature every PE file starts with. On error, the program prints the reason to stderr and exits with status 1.
+
+## License
+
+Copyright (c) 2026 defensivearchitect. All rights reserved. See [LICENSE](LICENSE).
