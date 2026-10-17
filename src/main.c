@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    if (fseek(fp, 0, SEEK_END) !=0) {
+    if (fseek(fp, 0, SEEK_END) != 0) {
         perror(path);
         fclose(fp);
         return 1;
@@ -61,6 +61,15 @@ int main(int argc, char **argv) {
     }
 
     printf("read: %zu bytes\n", got);
+
+    if (len < 2) {
+        fprintf(stderr, "%s: file too small\n", path);
+        free(data);
+        fclose(fp);
+        return 1;
+    }
+
+    printf("first bytes: %02x %02x\n", data[0], data[1]);
 
     free(data);
 
