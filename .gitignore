@@ -1,4 +1,4 @@
-# Build Outputs
+# Build outputs
 build/
 *.exe
 *.obj
@@ -8,7 +8,7 @@ build/
 *.lib
 *.dll
 
-# Kepp test binaries and system drivers out of the repo
+# Keep test binaries and system drivers out of the repo
 *.sys
 
 # Editor
