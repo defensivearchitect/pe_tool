@@ -11,6 +11,8 @@ int main(int argc, char **argv) {
 
     const char *path = argv[1];
 
+    /* Binary mode: on Windows, text mode turns CR LF into LF and
+       treats byte 0x1A as end of file, which corrupts binary data. */
     FILE *fp = fopen(path, "rb");
     if (fp == NULL) {
         perror(path);
