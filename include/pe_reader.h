@@ -23,7 +23,8 @@ typedef enum {
    buffer in *out_data and its length in *out_len, and return
    PE_READ_OK; the caller must free the buffer. On failure, return
    the reason; *out_data is then NULL. */
-pe_read_status pe_read_file(const char *path, uint8_t **out_data, size_t *out_len);
+pe_read_status pe_read_file(const char *path, uint8_t **out_data,
+                            size_t *out_len);
 
 /* Short description of a status, for error messages. */
 const char *pe_read_status_str(pe_read_status status);

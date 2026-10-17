@@ -7,7 +7,8 @@
 /* Read the whole content of an already open file. The caller opens
    and closes the file, so this function can return early on any
    error without leaving the file open. */
-static pe_read_status read_open_file(FILE *fp, uint8_t **out_data, size_t *out_len) {
+static pe_read_status read_open_file(FILE *fp, uint8_t **out_data,
+                                     size_t *out_len) {
     if (fseek(fp, 0, SEEK_END) != 0) {
         return PE_READ_SEEK_FAILED;
     }
@@ -46,7 +47,8 @@ static pe_read_status read_open_file(FILE *fp, uint8_t **out_data, size_t *out_l
     return PE_READ_OK;
 }
 
-pe_read_status pe_read_file(const char *path, uint8_t **out_data, size_t *out_len) {
+pe_read_status pe_read_file(const char *path, uint8_t **out_data,
+                            size_t *out_len) {
     *out_data = NULL;
     *out_len = 0;
 
