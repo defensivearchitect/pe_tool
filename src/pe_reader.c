@@ -4,59 +4,72 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-uint8_t *pe_read_file(const char *path, size_t *out_len) {
+pe_read_status pe_read_file(const char *path, uint8_t **out_data, size_t *out_len) {
+    *out_data = NULL;
+    *out_len = 0;
+
     /* Binary mode: on Windows, text mode turns CR LF into LF and
        treats byte 0x1A as end of file, which corrupts binary data. */
     FILE *fp = fopen(path, "rb");
     if (fp == NULL) {
-        perror(path);
-        return NULL;
+        return PE_READ_OPEN_FAILED;
     }
 
     if (fseek(fp, 0, SEEK_END) != 0) {
-        perror(path);
         fclose(fp);
-        return NULL;
+        return PE_READ_SEEK_FAILED;
     }
 
     long size = ftell(fp);
     if (size < 0) {
-        perror(path);
         fclose(fp);
-        return NULL;
+        return PE_READ_SEEK_FAILED;
     }
 
     if (fseek(fp, 0, SEEK_SET) != 0) {
-        perror(path);
         fclose(fp);
-        return NULL;
+        return PE_READ_SEEK_FAILED;
     }
 
-    printf("size: %ld bytes\n", size);
-
     if (size == 0) {
-        fprintf(stderr, "%s: file is empty\n", path);
         fclose(fp);
-        return NULL;
+        return PE_READ_EMPTY;
     }
 
     size_t len = (size_t)size;
     uint8_t *data = malloc(len);
     if (data == NULL) {
-        fprintf(stderr, "%s: out of memory\n", path);
         fclose(fp);
-        return NULL;
+        return PE_READ_NO_MEMORY;
     }
 
     size_t got = fread(data, 1, len, fp);
     if (got != len) {
-        fprintf(stderr, "%s: could not read the whole file\n", path);
         free(data);
         fclose(fp);
-        return NULL;
+        return PE_READ_SHORT_READ;
     }
 
     fclose(fp);
+    *out_data = data;
     *out_len = len;
-    return data;
+    return PE_READ_OK;
+}
+
+const char *pe_read_status_str(pe_read_status status) {
+    switch (status) {
+    case PE_READ_OK:
+        return "ok";
+    case PE_READ_OPEN_FAILED:
+        return "cannot open file";
+    case PE_READ_SEEK_FAILED:
+        return "cannot determine file size";
+    case PE_READ_EMPTY:
+        return "file is empty";
+    case PE_READ_NO_MEMORY:
+        return "out of memory";
+    case PE_READ_SHORT_READ:
+        return "could not read the whole file";
+    }
+    return "unknown error";
 }

@@ -13,9 +13,15 @@ int main(int argc, char **argv) {
 
     const char *path = argv[1];
 
+    uint8_t *data = NULL;
     size_t len = 0;
-    uint8_t *data = pe_read_file(path, &len);
-    if (data == NULL) {
+    pe_read_status status = pe_read_file(path, &data, &len);
+    if (status == PE_READ_OPEN_FAILED) {
+        perror(path);
+        return 1;
+    }
+    if (status != PE_READ_OK) {
+        fprintf(stderr, "%s: %s\n", path, pe_read_status_str(status));
         return 1;
     }
 
