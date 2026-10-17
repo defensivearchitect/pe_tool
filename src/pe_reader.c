@@ -4,6 +4,44 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* Read the whole content of an already open file. The caller opens
+   and closes the file, so this function can return eraly on any
+   error without leaving the file open. */
+static pe_read_status read_open_file(FILE *fp, uint8_t **out_data, size_t *out_len) {
+    if (fseek(fp, 0, SEEK_END) != 0) {
+        return PE_READ_SEEK_FAILED;
+    }
+
+    long size = ftell(fp);
+    if (size < 0) {
+        return PE_READ_SEEK_FAILED;
+    }
+
+    if (fseek(fp, 0, SEEK_SET) != 0) {
+        return PE_READ_SEEK_FAILED;
+    }
+
+    if (size == 0) {
+        return PE_READ_EMPTY;
+    }
+
+    size_t len = (size_t)size;
+    uint8_t *data = malloc(len);
+    if (data == NULL) {
+        return PE_READ_NO_MEMORY;
+    }
+
+    size_t got = fread(data, 1, len, fp);
+    if (got != len) {
+        free(data);
+        return PE_READ_SHORT_READ;
+    }
+
+    *out_data = data;
+    *out_len = len;
+    return PE_READ_OK;
+}
+
 pe_read_status pe_read_file(const char *path, uint8_t **out_data, size_t *out_len) {
     *out_data = NULL;
     *out_len = 0;
@@ -15,45 +53,9 @@ pe_read_status pe_read_file(const char *path, uint8_t **out_data, size_t *out_le
         return PE_READ_OPEN_FAILED;
     }
 
-    if (fseek(fp, 0, SEEK_END) != 0) {
-        fclose(fp);
-        return PE_READ_SEEK_FAILED;
-    }
-
-    long size = ftell(fp);
-    if (size < 0) {
-        fclose(fp);
-        return PE_READ_SEEK_FAILED;
-    }
-
-    if (fseek(fp, 0, SEEK_SET) != 0) {
-        fclose(fp);
-        return PE_READ_SEEK_FAILED;
-    }
-
-    if (size == 0) {
-        fclose(fp);
-        return PE_READ_EMPTY;
-    }
-
-    size_t len = (size_t)size;
-    uint8_t *data = malloc(len);
-    if (data == NULL) {
-        fclose(fp);
-        return PE_READ_NO_MEMORY;
-    }
-
-    size_t got = fread(data, 1, len, fp);
-    if (got != len) {
-        free(data);
-        fclose(fp);
-        return PE_READ_SHORT_READ;
-    }
-
+    pe_read_status status = read_open_file(fp, out_data, out_len);
     fclose(fp);
-    *out_data = data;
-    *out_len = len;
-    return PE_READ_OK;
+    return status;
 }
 
 const char *pe_read_status_str(pe_read_status status) {
