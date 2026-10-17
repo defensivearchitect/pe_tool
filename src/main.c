@@ -15,7 +15,26 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    printf("opened: %s\n", path);
+    if (fseek(fp, 0, SEEK_END) !=0) {
+        perror(path);
+        fclose(fp);
+        return 1;
+    }
+
+    long size = ftell(fp);
+    if (size < 0) {
+        perror(path);
+        fclose(fp);
+        return 1;
+    }
+
+    if (fseek(fp, 0, SEEK_SET) != 0) {
+        perror(path);
+        fclose(fp);
+        return 1;
+    }
+
+    printf("size: %ld bytes\n", size);
 
     fclose(fp);
     return 0;
