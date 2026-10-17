@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 /* Largest file pe_read_file() accepts, in bytes (256 MB). */
 #define PE_MAX_FILE_SIZE (256L * 1024 * 1024)
 
@@ -25,6 +26,6 @@ typedef enum {
 pe_read_status pe_read_file(const char *path, uint8_t **out_data, size_t *out_len);
 
 /* Short description of a status, for error messages. */
-const char *pe_read_status_str(pe_read_status status); 
+const char *pe_read_status_str(pe_read_status status);
 
 #endif

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 /* Read the whole content of an already open file. The caller opens
-   and closes the file, so this function can return eraly on any
+   and closes the file, so this function can return early on any
    error without leaving the file open. */
 static pe_read_status read_open_file(FILE *fp, uint8_t **out_data, size_t *out_len) {
     if (fseek(fp, 0, SEEK_END) != 0) {
