@@ -3,65 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* Read the whole file at path into memory. On success, return the
-   buffer and store its length in *out_len; the caller must free the
-   buffer. On failure, print the reason and return NULL. */
-static uint8_t *read_file(const char *path, size_t *out_len) {
-    /* Binary mode: on Windows, text mode turns CR LF into LF and
-       treats byte 0x1A as end of file, which corrupts binary data. */
-    FILE *fp = fopen(path, "rb");
-    if (fp == NULL) {
-        perror(path);
-        return NULL;
-    }
-
-    if (fseek(fp, 0, SEEK_END) != 0) {
-        perror(path);
-        fclose(fp);
-        return NULL;
-    }
-
-    long size = ftell(fp);
-    if (size < 0) {
-        perror(path);
-        fclose(fp);
-        return NULL;
-    }
-
-    if (fseek(fp, 0, SEEK_SET) != 0) {
-        perror(path);
-        fclose(fp);
-        return NULL;
-    }
-
-    printf("size: %ld bytes\n", size);
-
-    if (size == 0) {
-        fprintf(stderr, "%s: file is empty\n", path);
-        fclose(fp);
-        return NULL;
-    }
-
-    size_t len = (size_t)size;
-    uint8_t *data = malloc(len);
-    if (data == NULL) {
-        fprintf(stderr, "%s: out of memory\n", path);
-        fclose(fp);
-        return NULL;
-    }
-
-    size_t got = fread(data, 1, len, fp);
-    if (got != len) {
-        fprintf(stderr, "%s: could not read the whole file\n", path);
-        free(data);
-        fclose(fp);
-        return NULL;
-    }
-
-    fclose(fp);
-    *out_len = len;
-    return data;
-}
+#include "pe_reader.h"
 
 int main(int argc, char **argv) {
     if (argc != 2) {
@@ -72,7 +14,7 @@ int main(int argc, char **argv) {
     const char *path = argv[1];
 
     size_t len = 0;
-    uint8_t *data = read_file(path, &len);
+    uint8_t *data = pe_read_file(path, &len);
     if (data == NULL) {
         return 1;
     }
