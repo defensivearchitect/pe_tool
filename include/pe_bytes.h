@@ -12,4 +12,9 @@
 bool pe_read_u16_le(const uint8_t *data, size_t len, size_t offset,
                     uint16_t *out);
 
+/* Read the 32-bit little-endian value that starts at data[offset],
+   with the same rules as pe_read_u16_le(). */
+bool pe_read_u32_le(const uint8_t *data, size_t len, size_t offset,
+                    uint32_t *out);
+
 #endif

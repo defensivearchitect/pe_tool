@@ -16,3 +16,13 @@ bool pe_read_u16_le(const uint8_t *data, size_t len, size_t offset,
     *out = (uint16_t)((uint32_t)data[offset] | (uint32_t)data[offset + 1] << 8);
     return true;
 }
+
+bool pe_read_u32_le(const uint8_t *data, size_t len, size_t offset,
+                    uint32_t *out) {
+    if (!fits(len, offset, 4)) {
+        return false;
+    }
+    *out = (uint32_t)data[offset] | (uint32_t)data[offset + 1] << 8 |
+           (uint32_t)data[offset + 2] << 16 | (uint32_t)data[offset + 3] << 24;
+    return true;
+}
