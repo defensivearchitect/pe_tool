@@ -1,5 +1,5 @@
 CC     = gcc
-CFLAGS = -std=c11 -Wall -Wextra -Wpedantic -Wshadow -Wconversion -g -Iinclude
+CFLAGS = -std=c11 -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wmissing-prototypes -g -Iinclude
 SRC    = $(wildcard src/*.c)
 HDR    = $(wildcard include/*.h)
 OUT    = build/pe_tool.exe
