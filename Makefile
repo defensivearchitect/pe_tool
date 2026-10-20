@@ -5,6 +5,7 @@ HDR    = $(wildcard include/*.h)
 OUT    = build/pe_tool.exe
 
 TEST_SRC = tests/test_bytes.c src/pe_bytes.c
+TEST_HDR = $(wildcard tests/*.h)
 TEST_OUT = build/test_bytes.exe
 
 all: $(OUT)
@@ -16,7 +17,7 @@ $(OUT): $(SRC) $(HDR)
 test: $(TEST_OUT)
 	./$(TEST_OUT)
 
-$(TEST_OUT): $(TEST_SRC) $(HDR)
+$(TEST_OUT): $(TEST_SRC) $(HDR) $(TEST_HDR)
 	mkdir -p build
 	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_OUT)
 

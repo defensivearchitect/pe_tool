@@ -1,22 +1,9 @@
 /* test_bytes.c -- tests for the bounds-checked byte readers. */
 #include "pe_bytes.h"
 
-#include <stdbool.h>
 #include <stdint.h>
-#include <stdio.h>
 
-static int failures = 0;
-
-/* Record a failed check and keep going, so one run reports every
-   failure. */
-static void check(bool ok, const char *expr, int line) {
-    if (!ok) {
-        fprintf(stderr, "%s:%d: check failed: %s\n", __FILE__, line, expr);
-        failures++;
-    }
-}
-
-#define CHECK(cond) check((cond), #cond, __LINE__)
+#include "check.h"
 
 static void test_u16_reads_little_endian(void) {
     const uint8_t data[] = {0x34, 0x12};
@@ -73,10 +60,6 @@ int main(void) {
     test_u32_reads_little_endian();
     test_u32_top_byte_set();
     test_u32_rejects_out_of_bounds();
-    if (failures != 0) {
-        fprintf(stderr, "%d check(s) failed\n", failures);
-        return 1;
-    }
-    printf("all tests passed\n");
-    return 0;
+
+    return check_report();
 }
