@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "pe_headers.h"
 #include "pe_reader.h"
 
 int main(int argc, char **argv) {
@@ -27,13 +28,15 @@ int main(int argc, char **argv) {
 
     printf("read: %zu bytes\n", len);
 
-    if (len < 2) {
-        fprintf(stderr, "%s: file too small\n", path);
+    size_t pe_offset = 0;
+    pe_header_status header_status = pe_find_pe_header(data, len, &pe_offset);
+    if (header_status != PE_HEADER_OK) {
+        fprintf(stderr, "%s: %s\n", path, pe_header_status_str(header_status));
         free(data);
         return 1;
     }
 
-    printf("first bytes: %02x %02x\n", data[0], data[1]);
+    printf("PE header at: 0x%zx\n", pe_offset);
 
     free(data);
     return 0;

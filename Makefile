@@ -4,8 +4,8 @@ SRC    = $(wildcard src/*.c)
 HDR    = $(wildcard include/*.h)
 OUT    = build/pe_tool.exe
 
-TEST_SRC = tests/test_bytes.c src/pe_bytes.c
-TEST_OUT = build/test_bytes.exe
+TEST_HDR = $(wildcard tests/*.h)
+TESTS    = build/test_bytes.exe build/test_headers.exe
 
 all: $(OUT)
 
@@ -13,12 +13,17 @@ $(OUT): $(SRC) $(HDR)
 	mkdir -p build
 	$(CC) $(CFLAGS) $(SRC) -o $(OUT)
 
-test: $(TEST_OUT)
-	./$(TEST_OUT)
+test: $(TESTS)
+	./build/test_bytes.exe
+	./build/test_headers.exe
 
-$(TEST_OUT): $(TEST_SRC) $(HDR)
+build/test_bytes.exe: tests/test_bytes.c src/pe_bytes.c $(HDR) $(TEST_HDR)
 	mkdir -p build
-	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_OUT)
+	$(CC) $(CFLAGS) $(filter %.c,$^) -o $@
+
+build/test_headers.exe: tests/test_headers.c src/pe_headers.c src/pe_bytes.c $(HDR) $(TEST_HDR)
+	mkdir -p build
+	$(CC) $(CFLAGS) $(filter %.c,$^) -o $@
 
 clean:
 	rm -rf build
